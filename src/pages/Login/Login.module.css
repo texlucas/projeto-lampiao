@@ -1,0 +1,5 @@
+.background{
+    background-color: pink;
+    display: flex;
+    justify-content: space-between;
+}
