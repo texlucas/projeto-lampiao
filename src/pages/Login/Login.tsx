@@ -1,73 +1,74 @@
 import { Button } from "@/components/ui/button"
 import {
   Card,
-  CardAction,
   CardContent,
-  CardDescription,
   CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import styles from "./Login.module.css";
-
+import background from "../../assets/images/backkground.png";
+import logo from"../../assets/images/LAMPIAO logo.png";
+import logo2 from"../../assets/images/lampiao-logo2.png";
 
 const Login = () => {
 
   return (
     <>
-      <div className={styles.background}>
-        <div>
-            <h1>oi</h1>
+      <div className={styles.container}>
+        <div className={styles.background} style={{ backgroundImage: `url(${background})` }}>
+            <img className={styles.logo} src={logo} alt="Coletivo Lampião da Esquina" />
         </div>
-        <div>
-        <Card className="w-full max-w-sm">
-            <CardHeader>
-                <CardTitle>Login to your account</CardTitle>
-                <CardDescription>
-                Enter your email below to login to your account
-                </CardDescription>
-                <CardAction>
-                <Button variant="link">Sign Up</Button>
-                </CardAction>
-            </CardHeader>
-            <CardContent>
-                <form>
-                <div className="flex flex-col gap-6">
-                    <div className="grid gap-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                        id="email"
-                        type="email"
-                        placeholder="m@example.com"
-                        required
-                    />
-                    </div>
-                    <div className="grid gap-2">
-                    <div className="flex items-center">
-                        <Label htmlFor="password">Password</Label>
-                        <a
-                        href="#"
-                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                        >
-                        Forgot your password?
-                        </a>
-                    </div>
-                    <Input id="password" type="password" required />
-                    </div>
-                </div>
-                </form>
-            </CardContent>
-            <CardFooter className="flex-col gap-2">
-                <Button type="submit" className="w-full">
-                Login
-                </Button>
-                <Button variant="outline" className="w-full">
-                Login with Google
-                </Button>
-            </CardFooter>
-            </Card>
+        <div className={styles.forms}>
+          <div  style={{display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center'}}>
+            <img src={logo2} alt="Logo Lampião da Esquina" /> 
+            <div style={{display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center'}}>
+                <h2 style={{fontSize: '30px', fontWeight: '600'}}>Entre na sua conta</h2>
+                <h4 style={{fontSize: '20px'}}>Digite seu email e senha para entrar.</h4>
+            </div>
+          </div>
+          <Card className="w-full max-w-sm">
+              <CardContent>
+                  <form>
+                  <div className="flex flex-col gap-6">
+                      <div className="grid gap-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                          id="email"
+                          type="email"
+                          placeholder="m@example.com"
+                          required
+                      />
+                      </div>
+                      <div className="grid gap-2">
+                      <div className="flex items-center">
+                          <Label htmlFor="password">Password</Label>
+                      </div>
+                      <Input id="password" type="password" required />
+                      <a
+                          href="#"
+                          className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-blue-600"
+                          >
+                          Esqueceu a senha?
+                          </a>
+                      </div>
+                  </div>
+                  </form>
+              </CardContent>
+              <CardFooter className="flex-col gap-2">
+                  <Button type="submit" className="w-full bg-fuchsia-800 hover:bg-fuchsia-900 h-11">
+                  Log In
+                  </Button>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                    <a>
+                      Não tem uma conta?
+                    </a>
+                    <a href="#"className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-blue-600">
+                      Cadastre-se
+                    </a>
+                  </div>
+              </CardFooter>
+              </Card>
         </div>
       </div>
     </>

@@ -1,5 +1,29 @@
-.background{
-    background-color: pink;
+.container{
     display: flex;
-    justify-content: space-between;
+    height: 100vh;
+    width: 100%;
+}
+
+.background {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+}
+
+.logo{
+  width: 26.875rem;
+  height: 17.125rem;
+}
+
+.forms{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50%;
+  align-items: center;
+  gap: 4rem;
 }
