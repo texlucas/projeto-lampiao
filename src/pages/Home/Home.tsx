@@ -28,6 +28,8 @@ const Home = () => {
   const [denuncias, setDenuncias] = useState<DenunciaResponse[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
+
   const fetchUsuario = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -75,8 +77,6 @@ const Home = () => {
 
   if (loading) return <p>Carregando...</p>;
 
-const Home = () => {
-  const navigate = useNavigate();
 
   return (
     <>
@@ -88,8 +88,8 @@ const Home = () => {
         </header>
         <main className={styles.body}>
           <Button
-            onClick={() => navigate("/formulario")}
             type="submit"
+            onClick={() => navigate("/Formulario")}
             className="
                     w-[28rem] mx-400 h-12
                     bg-[#FBDAFF] border border-[#A567AD] 
@@ -111,7 +111,7 @@ const Home = () => {
                     tipo={d.tipo}
                     descricao={d.descricao}
                     data={d.data}
-                    status={d.status}
+                    status={d.status as "Pendente" | "Em Análise" | "Resolvida"}
                   />
                 ))}
               </div>

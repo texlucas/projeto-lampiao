@@ -16,13 +16,13 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface Usuario {
   id: string;
   nome: string;
   email: string;
 }
-import { useNavigate } from "react-router-dom";
 
 
 const Formulario = () => {
@@ -32,6 +32,7 @@ const Formulario = () => {
   const [files, setFiles] = useState<FileList | null>(null);
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +71,7 @@ const Formulario = () => {
       setClassificacao("");
       setFiles(null);
       setAnonimo(false);
-
+      navigate("/home");
     } catch (error: any) {
       console.error("Erro ao enviar denúncia:", error);
       alert(error.response?.data?.message || "Erro ao enviar denúncia.");
@@ -103,7 +104,6 @@ const Formulario = () => {
   }, []);
 
   if (loading) return <p>Carregando...</p>;
-  const navigate = useNavigate();
 
   return (
     <>
