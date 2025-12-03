@@ -33,7 +33,6 @@ const Home = () => {
             <p>Você não possui denúncias feitas</p>
             <div className={styles.cardsContainer}>
 
-            {/* Exemplo de uma denúncia */}
             <DenunciaCard
               tipo="Assédio Moral"
               descricao="Início do detalhamento da denúncia..."
@@ -41,7 +40,6 @@ const Home = () => {
               status="Pendente"
             />
 
-            {/* Você pode duplicar essas chamadas ou renderizar a partir do backend */}
             <DenunciaCard
               tipo="Discriminação"
               descricao="Detalhamento inicial..."

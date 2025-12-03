@@ -27,3 +27,18 @@
   align-items: center;
   gap: 4rem;
 }
+
+.submitButton {
+  width: 100%;
+  margin-top: 1rem;
+  background: linear-gradient(90deg, #76477C, #9f6db3);
+  color: white;
+  height: 45px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.submitButton:hover {
+  background: linear-gradient(90deg, #76477C, #8a50a1);
+  box-shadow: 2px 2px 10px 2px #c081c9
+}

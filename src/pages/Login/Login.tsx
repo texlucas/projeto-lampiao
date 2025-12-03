@@ -134,7 +134,7 @@ const Login = () => {
             <CardFooter className="flex-col gap-2">
               <Button
                 onClick={handleLogin}
-                className="w-full bg-fuchsia-800 hover:bg-fuchsia-900 h-11"
+                className={styles.submitButton}
               >
                 Log In
               </Button>

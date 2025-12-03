@@ -205,7 +205,7 @@ const Register = () => {
                 </div>
               </CardContent>
               <CardFooter className="flex-col gap-2">
-                <Button type="submit" className="w-full h-12 rounded-xl font-inter text-white text-base bg-[#76477C] hover:bg-[#603366] border shadow-sm cursor-pointer transition">
+                <Button type="submit" className={styles.submitButton}>
                   Cadastrar
                 </Button>
               </CardFooter>
