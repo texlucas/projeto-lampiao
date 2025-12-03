@@ -5,9 +5,9 @@ import logo3 from "../../assets/images/lampiao-logo3.png";
 import { UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { IoMdMegaphone } from "react-icons/io";
+import DenunciaCard from "@/components/denuncia"; 
 
 const Home = () => {
-
 
   return (
     <>
@@ -31,6 +31,24 @@ const Home = () => {
                 FAZER DENÚNCIA
             </Button>
             <p>Você não possui denúncias feitas</p>
+            <div className={styles.cardsContainer}>
+
+            {/* Exemplo de uma denúncia */}
+            <DenunciaCard
+              tipo="Assédio Moral"
+              descricao="Início do detalhamento da denúncia..."
+              data="05/12/2025 às 14:30"
+              status="Pendente"
+            />
+
+            {/* Você pode duplicar essas chamadas ou renderizar a partir do backend */}
+            <DenunciaCard
+              tipo="Discriminação"
+              descricao="Detalhamento inicial..."
+              data="04/12/2025 às 16:10"
+              status="Resolvida"
+            />
+          </div>
         </main>
         <footer className={styles.footer}>
             <img src={logo} className={styles.logo} alt="Coletivo Lampião da Esquina" />
