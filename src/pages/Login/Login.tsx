@@ -20,9 +20,6 @@ const Login = () => {
   const [senha, setSenha] = useState("");
   const navigate = useNavigate();
 
-  // -------------------------
-  //     HANDLE LOGIN
-  // -------------------------
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -37,12 +34,9 @@ const Login = () => {
 
       console.log("Login success:", response.data);
 
-      // Save token
       localStorage.setItem("token", response.data.token);
       navigate("/home");
 
-      // Redirect somewhere
-      // window.location.href = "/dashboard";
 
     } catch (error: any) {
       console.error("Login error:", error);
