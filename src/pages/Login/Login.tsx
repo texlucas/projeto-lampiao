@@ -17,9 +17,6 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
-  // -------------------------
-  //     HANDLE LOGIN
-  // -------------------------
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -34,11 +31,8 @@ const Login = () => {
 
       console.log("Login success:", response.data);
 
-      // Save token
       localStorage.setItem("token", response.data.token);
 
-      // Redirect somewhere
-      // window.location.href = "/dashboard";
 
     } catch (error: any) {
       console.error("Login error:", error);

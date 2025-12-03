@@ -1,225 +1,183 @@
-// backend/controllers/DenunciaController.ts
-
-import type { Request, Response } from 'express';
-import { denunciaService } from '../services/DenunciaService'; 
-import  logService  from '../services/LogService'; 
-import fs from 'fs'; 
+import type { Request, Response } from "express";
+import { denunciaService } from "../services/DenunciaService";
+import logService from "../services/LogService";
+import fs from "fs";
 
 class DenunciaController {
-    
-    // RF005/RF006/RF007: Criação de Denúncia com Anexo
-    async create(req: Request, res: Response) {
-        
-        const requestWithUser = req as any; 
-        
-        // Extrai os campos do form-data (todos virão como string)
-        const { 
-            titulo, 
-            descricao, 
-            data_ocorrencia, 
-            local_ocorrencia 
-        } = requestWithUser.body;
 
-        // O campo 'anonima' vem como string ('true' ou 'false')
-        const anonima = requestWithUser.body.anonima === 'true'; 
-        
-        // O campo 'id_categoria' vem como string
-        const id_categoria_string = requestWithUser.body.id_categoria || '1'; 
-        const id_categoria = parseInt(id_categoria_string, 10);
-        
-        // RF007: Dados do arquivo (se houver, o multer salva em req.file)
-        const anexoPath = requestWithUser.file ? requestWithUser.file.path : null; 
+  // Criar denúncia
+  async create(req: Request, res: Response) {
+    const requestWithUser = req as any;
 
-        // Dados do Token
-        const id_usuario_logado = requestWithUser.user?.id; 
+    const { descricao, categoria, anonima } = requestWithUser.body;
 
-        // Lógica de Anonimato: se anonima for true, o id_usuario deve ser null
-        const id_usuario = anonima ? null : (id_usuario_logado || null);
-        
-        // 1. Validação mínima (Título e Descrição)
-        if (!titulo || !descricao || isNaN(id_categoria)) {
-            if (anexoPath) fs.unlinkSync(anexoPath); 
-            return res.status(400).json({ message: 'Título, descrição e ID da Categoria válidos são obrigatórios.' });
-        }
-        
-        // 2. Validação de autenticação se a denúncia NÃO for anônima
-        if (!anonima && !id_usuario_logado) {
-            if (anexoPath) fs.unlinkSync(anexoPath); 
-            return res.status(401).json({ message: 'Autenticação necessária para denúncias não anônimas.' });
-        }
+    // anonima vem como string → converter
+    const isAnonima = anonima === "true";
 
-        try {
-            const denuncia = await denunciaService.create(
-                titulo, 
-                descricao, 
-                id_usuario, // Passa null se anônima
-                id_categoria, 
-                data_ocorrencia || null, 
-                local_ocorrencia || null, 
-                anonima, 
-                anexoPath 
-            );
+    // categoria vem como string → converter
+    const id_categoria = parseInt(categoria);
 
-            return res.status(201).json({ 
-                message: 'Denúncia registrada com sucesso!',
-                denuncia
-            });
+    // múltiplos arquivos
+    const anexos = requestWithUser.files as Express.Multer.File[] | undefined;
 
-        } catch (error: unknown) {
-            // Se o Service falhar, é crucial excluir o arquivo que o multer salvou (se existir)
-            if (anexoPath) {
-                try {
-                    fs.unlinkSync(anexoPath); 
-                } catch (unlinkError) {
-                    console.error('Falha ao excluir o anexo após erro no DB:', unlinkError);
-                }
-            }
-            
-            let errorMessage = 'Falha ao registrar a denúncia.';
-            if (error instanceof Error) {
-                errorMessage = error.message;
-            }
-            return res.status(500).json({ message: errorMessage });
-        }
+    const id_usuario_logado = requestWithUser.user?.id;
+
+    const id_usuario = isAnonima ? null : id_usuario_logado;
+
+    // validações
+    if (!descricao || !id_categoria) {
+      // excluir arquivos enviados se houver erro
+      anexos?.forEach((f) => fs.unlinkSync(f.path));
+      return res.status(400).json({
+        message: "Descrição e Categoria são obrigatórias.",
+      });
     }
 
-    // RF016: Listar Todas as Denúncias (Restrito à Autoridade)
-    async listAllDenuncias(req: Request, res: Response) {
-        const requestWithUser = req as any; 
-        const id_perfil_logado = requestWithUser.user?.perfil; 
-
-        if (!id_perfil_logado) {
-             return res.status(401).json({ message: 'Autenticação necessária.' });
-        }
-
-        // Autorização: Apenas Perfis > 1 (Autoridade)
-        if (id_perfil_logado <= 1) { 
-            return res.status(403).json({ message: 'Acesso negado. Apenas autoridades podem listar todas as denúncias.' });
-        }
-        
-        try {
-            const denuncias = await denunciaService.listAll();
-            return res.status(200).json(denuncias);
-
-        } catch (error: unknown) {
-            let errorMessage = 'Falha ao listar todas as denúncias.';
-            if (error instanceof Error) {
-                errorMessage = error.message;
-            }
-            return res.status(500).json({ message: errorMessage });
-        }
+    if (!isAnonima && !id_usuario_logado) {
+      anexos?.forEach((f) => fs.unlinkSync(f.path));
+      return res.status(401).json({
+        message: "Você precisa estar logado para enviar denúncia identificada.",
+      });
     }
 
-    // RF011: Lista apenas as denúncias do usuário logado
-    async listMyDenuncias(req: Request, res: Response) {
-        const requestWithUser = req as any; 
-        const id_usuario_logado = requestWithUser.user?.id; 
+    try {
+      const denuncia = await denunciaService.create({
+        descricao,
+        anonima: isAnonima,
+        id_usuario,
+        id_categoria,
+        anexos
+      });
 
-        if (!id_usuario_logado) {
-             return res.status(401).json({ message: 'Autenticação necessária.' });
-        }
+      return res.status(201).json({
+        message: "Denúncia registrada com sucesso!",
+        denuncia,
+      });
+    } catch (error: any) {
+      // limpar arquivos caso o create falhe
+      anexos?.forEach((f) => fs.unlinkSync(f.path));
 
-        try {
-            const denuncias = await denunciaService.listByUser(id_usuario_logado); 
-            return res.status(200).json(denuncias);
-
-        } catch (error: unknown) {
-            let errorMessage = 'Falha ao listar as suas denúncias.';
-            if (error instanceof Error) {
-                errorMessage = error.message;
-            }
-            return res.status(500).json({ message: errorMessage });
-        }
+      return res.status(500).json({
+        message: error?.message || "Erro ao registrar a denúncia.",
+      });
     }
-    
-    // RF019: Detalhe de UMA denúncia específica
-    async detail(req: Request, res: Response) {
-        const requestWithUser = req as any; 
-        const id_denuncia = parseInt(requestWithUser.params.id, 10); 
-        const id_usuario_logado = requestWithUser.user?.id; 
-        const id_perfil_logado = requestWithUser.user?.perfil; 
+  }
 
-        if (!id_usuario_logado || !id_perfil_logado) {
-             return res.status(401).json({ message: 'Autenticação necessária. Token inválido ou expirado.' });
-        }
+  // Lista TODAS (somente autoridade)
+  async listAllDenuncias(req: Request, res: Response) {
+    const requestWithUser = req as any;
+    const perfil = requestWithUser.user?.perfil;
 
-        if (isNaN(id_denuncia)) {
-            return res.status(400).json({ message: 'ID da denúncia inválido.' });
-        }
-
-        try {
-            const denuncia = await denunciaService.getById(id_denuncia);
-
-            if (!denuncia) {
-                return res.status(404).json({ message: 'Denúncia não encontrada.' });
-            }
-
-            const isAutoridade = (id_perfil_logado > 1);
-            const isCriador = (id_usuario_logado === denuncia.id_usuario);
-            
-            if (!isAutoridade && !isCriador) {
-                return res.status(403).json({ message: 'Acesso negado. Você não tem permissão para visualizar esta denúncia.' });
-            }
-            
-            // Lógica de Anonimato
-            if (denuncia.anonima && !isCriador) {
-                denuncia.nome_usuario_denunciante = 'Anônimo';
-                denuncia.id_usuario = null; // Oculta o ID do criador para autoridades
-            }
-
-            return res.status(200).json(denuncia);
-
-        } catch (error: unknown) {
-            let errorMessage = 'Falha ao buscar os detalhes da denúncia.';
-            if (error instanceof Error) {
-                errorMessage = error.message;
-            }
-            return res.status(500).json({ message: errorMessage });
-        }
+    if (!perfil) {
+      return res.status(401).json({ message: "Autenticação necessária." });
     }
 
-    // RF018/RF024: Método para alterar o status da denúncia
-    async updateStatus(req: Request, res: Response) {
-        const requestWithUser = req as any; 
-        const id_denuncia = parseInt(requestWithUser.params.id, 10); 
-        const { status: novo_status } = requestWithUser.body; 
-        const id_perfil_logado = requestWithUser.user?.perfil; 
-        const id_usuario_logado = requestWithUser.user?.id; 
-
-        if (!id_usuario_logado || !id_perfil_logado) {
-             return res.status(401).json({ message: 'Autenticação necessária. Token inválido ou expirado.' });
-        }
-
-        if (isNaN(id_denuncia) || !novo_status) {
-            return res.status(400).json({ message: 'ID da denúncia e novo status são obrigatórios.' });
-        }
-        
-        // Autorização: Apenas perfis de Autoridade (Perfil > 1)
-        if (id_perfil_logado <= 1) {
-            return res.status(403).json({ message: 'Acesso negado. Apenas autoridades podem alterar o status da denúncia.' });
-        }
-
-        try {
-            const denunciaAtualizada = await denunciaService.updateStatus(id_denuncia, novo_status);
-            
-            // LOG DE AUDITORIA (RF024)
-            const logDetails = `Status da Denúncia ${id_denuncia} alterado para ${novo_status}.`;
-            
-             await logService.logUserAction(id_usuario_logado, 'DENUNCIA_STATUS_UPDATE', true, logDetails);
-            
-            return res.status(200).json({
-                message: 'Status da denúncia atualizado com sucesso!',
-                denuncia: denunciaAtualizada
-            });
-
-        } catch (error: unknown) {
-            let errorMessage = 'Falha ao atualizar o status da denúncia.';
-            if (error instanceof Error) {
-                errorMessage = error.message;
-            }
-            return res.status(500).json({ message: errorMessage });
-        }
+    if (perfil <= 1) {
+      return res.status(403).json({ message: "Acesso negado." });
     }
+
+    try {
+      const denuncias = await denunciaService.listAll();
+      return res.status(200).json(denuncias);
+    } catch (e: any) {
+      return res.status(500).json({ message: e.message });
+    }
+  }
+
+  // Lista MINHAS denúncias
+  async listMyDenuncias(req: Request, res: Response) {
+    const requestWithUser = req as any;
+    const id = requestWithUser.user?.id;
+
+    if (!id) {
+      return res.status(401).json({ message: "Autenticação necessária." });
+    }
+
+    try {
+      const denuncias = await denunciaService.listByUser(id);
+      return res.status(200).json(denuncias);
+    } catch (e: any) {
+      return res.status(500).json({ message: e.message });
+    }
+  }
+
+  // Detalhar denúncia
+  async detail(req: Request, res: Response) {
+    const requestWithUser = req as any;
+    const id_denuncia = parseInt(req.params.id, 10);
+
+    const id_usuario = requestWithUser.user?.id;
+    const perfil = requestWithUser.user?.perfil;
+
+    if (!id_usuario || !perfil) {
+      return res.status(401).json({ message: "Autenticação necessária." });
+    }
+
+    try {
+      const denuncia = await denunciaService.getById(id_denuncia);
+
+      if (!denuncia) {
+        return res.status(404).json({ message: "Denúncia não encontrada." });
+      }
+
+      const isAutoridade = perfil > 1;
+      const isDono = denuncia.id_usuario === id_usuario;
+
+      if (!isAutoridade && !isDono) {
+        return res.status(403).json({ message: "Acesso negado." });
+      }
+
+      // anonimato
+      if (denuncia.anonima && !isDono) {
+        denuncia.nome_usuario_denunciante = "Anônimo";
+        denuncia.id_usuario = null;
+      }
+
+      return res.status(200).json(denuncia);
+    } catch (e: any) {
+      return res.status(500).json({ message: e.message });
+    }
+  }
+
+  // Atualizar status
+  async updateStatus(req: Request, res: Response) {
+    const requestWithUser = req as any;
+    const id_denuncia = parseInt(req.params.id, 10);
+    const { status } = requestWithUser.body;
+
+    const perfil = requestWithUser.user?.perfil;
+    const id_usuario = requestWithUser.user?.id;
+
+    if (!perfil || !id_usuario) {
+      return res.status(401).json({ message: "Autenticação necessária." });
+    }
+
+    if (perfil <= 1) {
+      return res.status(403).json({ message: "Apenas autoridades podem alterar o status." });
+    }
+
+    if (!status) {
+      return res.status(400).json({ message: "Novo status é obrigatório." });
+    }
+
+    try {
+      const denunciaAtualizada = await denunciaService.updateStatus(id_denuncia, status);
+
+      await logService.logUserAction(
+        id_usuario,
+        "DENUNCIA_STATUS_UPDATE",
+        true,
+        `Status da denúncia ${id_denuncia} alterado para ${status}`
+      );
+
+      return res.status(200).json({
+        message: "Status atualizado com sucesso!",
+        denuncia: denunciaAtualizada,
+      });
+    } catch (e: any) {
+      return res.status(500).json({ message: e.message });
+    }
+  }
 }
 
 export const denunciaController = new DenunciaController();
