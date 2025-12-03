@@ -21,6 +21,8 @@ import { PhoneInput } from "@/components/phone-input"
 import { PasswordInput } from "@/components/password-input"
 import { toast } from "sonner";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 
 function formatDate(date: Date | undefined) {
   if (!date) {
@@ -47,6 +49,7 @@ const Register = () => {
   const [month, setMonth] = React.useState<Date | undefined>(date)
   const [value, setValue] = React.useState(formatDate(date))
   const [password, setPassword] = React.useState("")
+  const navigate = useNavigate();
 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -78,6 +81,7 @@ const Register = () => {
 
       console.log("Success:", response.data);
       toast.success("Cadastro realizado com sucesso!");
+      navigate("/");
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         console.error("API error:", error.response?.data || error.message);
@@ -103,7 +107,7 @@ const Register = () => {
               <h2 style={{ fontSize: '30px', fontWeight: '600' }}>Cadastre-se</h2>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <h4 style={{ fontSize: '20px' }}>Já possui uma conta?</h4>
-                <a href="Login" className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-blue-600 text-xl">
+                <a onClick={() => navigate("/")} className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-blue-600 text-xl cursor-pointer">
                   Log in
                 </a>
               </div>

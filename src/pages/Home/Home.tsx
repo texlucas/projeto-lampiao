@@ -6,19 +6,23 @@ import { UserCircle } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import { IoMdMegaphone } from "react-icons/io";
 import DenunciaCard from "@/components/denuncia"; 
+import { useNavigate } from "react-router-dom";
+
 
 const Home = () => {
+  const navigate = useNavigate();
 
   return (
     <>
     <div className={styles.container}>
         <header className={styles.header}>
-            <img src={logo3} alt="Coletivo Lampião da Esquina" />
+            <img src={logo3} alt="Coletivo Lampião da Esquina" onClick={() => navigate("/home")} style={{cursor: "pointer"}} />
             <p>Olá João, como podemos te ajudar?</p>
             <h4 style={{display: "flex", gap: "0.5rem"}}><UserCircle />João</h4>
         </header>
         <main className={styles.body}>
             <Button 
+              onClick={() => navigate("/formulario")}
                 type="submit"
                 className="
                     w-[28rem] mx-400 h-12

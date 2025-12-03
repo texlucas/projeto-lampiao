@@ -12,10 +12,13 @@ import styles from "./Login.module.css";
 import background from "../../assets/images/backkground.png";
 import logo from "../../assets/images/LAMPIAO logo.png";
 import logo2 from "../../assets/images/lampiao-logo2.png";
+import { useNavigate } from "react-router-dom";
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const navigate = useNavigate();
 
   // -------------------------
   //     HANDLE LOGIN
@@ -36,6 +39,7 @@ const Login = () => {
 
       // Save token
       localStorage.setItem("token", response.data.token);
+      navigate("/home");
 
       // Redirect somewhere
       // window.location.href = "/dashboard";
@@ -150,6 +154,7 @@ const Login = () => {
                 <a
                   href="#"
                   className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-blue-600"
+                  onClick={() => navigate("/register")}
                 >
                   Cadastre-se
                 </a>

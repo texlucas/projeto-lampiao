@@ -1,6 +1,5 @@
 import { useState } from "react";
 import styles from "./Formulario.module.css";
-
 import logo from "../../assets/images/LAMPIAO logo.png";
 import logo3 from "../../assets/images/lampiao-logo3.png";
 
@@ -16,15 +15,18 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { useNavigate } from "react-router-dom";
+
 
 const Formulario = () => {
   const [anonimo, setAnonimo] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <>
       <div className={styles.container}>
         <header className={styles.header}>
-          <img src={logo3} alt="Coletivo Lampião da Esquina" />
+          <img src={logo3} alt="Coletivo Lampião da Esquina" onClick={() => navigate("/home")} style={{cursor: "pointer"}} />
           <p>Olá João, como podemos te ajudar?</p>
           <h4 style={{ display: "flex", gap: "0.5rem" }}>
             <UserCircle /> João
