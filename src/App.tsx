@@ -1,16 +1,15 @@
 import './App.css'
-import { Button } from "@/components/ui/button"
-import Login from './pages/Login/Login'
-import Register from './pages/Register/Register'
-import Home from './pages/Home/Home'
-import Formulario from './pages/Formulario/Formulario'
+import { BrowserRouter } from 'react-router-dom'
+import Router from './routes/Router'
 
 function App() {
 
   return (
     <>
       <div>
-        <Formulario />
+        <BrowserRouter>
+          <Router />
+        </BrowserRouter>
       </div>
     </>
   )

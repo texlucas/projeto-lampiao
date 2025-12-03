@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import styles from "./Formulario.module.css";
-
 import logo from "../../assets/images/LAMPIAO logo.png";
 import logo3 from "../../assets/images/lampiao-logo3.png";
 
@@ -23,6 +22,7 @@ interface Usuario {
   nome: string;
   email: string;
 }
+import { useNavigate } from "react-router-dom";
 
 
 const Formulario = () => {
@@ -103,6 +103,7 @@ const Formulario = () => {
   }, []);
 
   if (loading) return <p>Carregando...</p>;
+  const navigate = useNavigate();
 
   return (
     <>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { IoMdMegaphone } from "react-icons/io";
 import DenunciaCard from "@/components/denuncia";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface Usuario {
   id: string;
@@ -74,6 +75,8 @@ const Home = () => {
 
   if (loading) return <p>Carregando...</p>;
 
+const Home = () => {
+  const navigate = useNavigate();
 
   return (
     <>
@@ -85,6 +88,7 @@ const Home = () => {
         </header>
         <main className={styles.body}>
           <Button
+            onClick={() => navigate("/formulario")}
             type="submit"
             className="
                     w-[28rem] mx-400 h-12
