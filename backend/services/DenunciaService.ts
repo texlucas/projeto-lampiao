@@ -24,10 +24,10 @@ class DenunciaService {
                 anonima,
                 id_usuario,
                 id_categoria,
-                protocolo,
+                protocolo
             )
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING id_denuncia, descricao, anonima, protocolo, caminho_anexo, data_registro;
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id_denuncia, descricao, anonima, protocolo;
         `;
 
         const caminho_anexo = data.anexos?.length
